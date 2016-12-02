@@ -24,6 +24,10 @@ Combined <- read.csv('EPIGINI.csv')
 
 Combined2012 <- read.csv('EPIGINI2012.csv')
 
+names(Combined2012)
+
+Combined2012 <- Combined2012[, c('GINI', 'GDPPerCapPPP', 'CO2EmPerCap', 'EPI.2012', 'iso2c')]
+
 Combined2010 <- read.csv('EPIGINI2010.csv')
 
 GINImap <- gvisGeoChart(Combined2010, locationvar = 'iso2c',
@@ -31,25 +35,31 @@ GINImap <- gvisGeoChart(Combined2010, locationvar = 'iso2c',
                       options = list(
                           colors = "['lightblue', 'blue']"
                           ))
+
 EPImap <- gvisGeoChart(Combined2010, locationvar = 'iso2c',
                       colorvar = 'EPI.2010',
                       options = list(
                           colors = "['red', 'yellow']"
                           ))
 
+GINImap2012 <- gvisGeoChart(Combined2012, locationvar = 'iso2c',
+                      colorvar = 'GINI',
+                      options = list(
+                          colors = "['lightblue', 'blue']"
+                          ))
+
+EPImap2012 <- gvisGeoChart(Combined2012, locationvar = 'iso2c',
+                      colorvar = 'EPI.2012',
+                      options = list(
+                          colors = "['red', 'yellow']"
+                          ))
+
 labels <- c('Gini Coefficient', 'GDP Per Capita (PPP)', '(Intecept)')
-
 m1 <- lm(EPI.2012 ~ GINI, Combined2012)
-
 m2 <- lm(EPI.2012 ~ GINI + GDPPerCapPPP, Combined2012)
-
 m3 <- lm(EPIValue ~ GiniCoeff + GDPperCapPPP, Combined)
-
 m4 <- plm(EPIValue ~ GiniCoeff + GDPperCapPPP, data=Combined, index= c('country', 'year'), model = 'within')
-
 m5 <- plm(EPIValue ~ GiniCoeff + GDPperCapPPP, data=Combined, index= c('country', 'year'), model = 'random')
-
-
 ```
 
 ## Table of contents
@@ -90,23 +100,40 @@ Does income inequality of a country affect its Environment Performance Index? If
     - Columns included items used to calculate EPI
     - Merge the data-sets
 - Control Variables:
-    - GDP per capita
+    - GDP per capita (PPP)
 
-## GINI Map {.flexbox .vcenter}
+## GINI Map 2010 {.flexbox .vcenter}
 
 ```{r descriptive 2, results='asis'}
 print(GINImap, tag = 'chart')
 ```
 
-## EPI Map {.flexbox .vcenter}
+## EPI Map 2010 {.flexbox .vcenter}
 
 ```{r descriptive 3, results='asis'}
 print(EPImap, tag = 'chart')
 ```
-## Plot  {.flexbox .vcenter}
+## GINI Map 2012 {.flexbox .vcenter}
+
+```{r descriptive 4, results='asis'}
+print(GINImap2012, tag = 'chart')
+```
+
+## EPI Map 2012 {.flexbox .vcenter}
+
+```{r descriptive 5, results='asis'}
+print(EPImap2012, tag = 'chart')
+```
+## Descriptive statistics  {.flexbox .vcenter}
 
 ```{r descriptive, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
-plot_ly(Combined2012, x = ~EPI.2012, y = ~GINI,
+stargazer(Combined2012, type = "html", title="Descriptive statistics", digits=1)
+```
+
+## Relationship EPI vs. GINI 2012  {.flexbox .vcenter}
+
+```{r okit, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+plot_ly(Combined2012, x = ~GINI, y = ~EPI.2012,
         mode = 'markers')
 ```
 
@@ -130,4 +157,10 @@ stargazer::stargazer(m3, m4, m5, type='html', covariate.labels = labels, digits 
 phtest(m4, m5)
 ```
 
+## Conclusion
+- Inequality has a negative correlation with EPI
+- 1 unit increase in Gini coefficient decreases the country's EPI by 0.1 unit.
+- Policies should be directed towards increasing GDP Per Capita (PPP) while making sure that inequality doesn't increase. (Economic Policy to deal with Environment issues)
+```{r conclusion}
 
+```
